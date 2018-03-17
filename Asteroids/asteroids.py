@@ -42,7 +42,7 @@ pygame.display.set_caption("Asteroids")
 clock = pygame.time.Clock()
 
 """importing images"""
-intro_image     = pygame.image.load('imagesintro.jpg')
+intro_image     = pygame.image.load('images/intro.jpg')
 debris_image    = pygame.image.load("images/debris2_blue.png")
 nebula_image    = pygame.image.load("images/nebula_blue.f2014.png")
 splash_image    = pygame.image.load("images/splash.png")
