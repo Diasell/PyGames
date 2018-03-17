@@ -17,6 +17,7 @@ red    = (255, 0, 0)
 green  = (0, 155, 0)
 blue   = (0, 0, 139)
 l_blue = (0, 0, 255)
+test   = '#ffffff'
 
 # globals for user interface
 WIDTH    = 800
@@ -31,21 +32,23 @@ FRICTION = 0.02
 game_exit = False
 game_over = False
 paused = False
+intro = True
 MY_EVENT = pygame.USEREVENT
-VOLUME_LEVEL = [0.1, 0.5, 0.9]
+VOLUME_LEVEL = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+DEFAULT_SOUND_LEVEL = 2
+current_sound = DEFAULT_SOUND_LEVEL
 
-"""Initializing PyGame and gamescreen"""
+# Initializing PyGame and gamescreen
 pygame.init()
 pygame.mixer.init()
 game_display = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Asteroids")
 clock = pygame.time.Clock()
 
-"""importing images"""
+# importing images
 intro_image     = pygame.image.load('images/intro.jpg')
 debris_image    = pygame.image.load("images/debris2_blue.png")
 nebula_image    = pygame.image.load("images/nebula_blue.f2014.png")
-splash_image    = pygame.image.load("images/splash.png")
 ship_image1     = pygame.image.load("images/ship.png")
 ship_image2     = pygame.image.load("images/ship_thr.png")
 missile_image   = pygame.image.load("images/shot1.png")
@@ -56,32 +59,53 @@ pbutton_image   = pygame.image.load("images/button_pressed1.png")
 gameover_image  = pygame.image.load("images/gameover.jpg")
 settings_image  = pygame.image.load("images/settings1.jpg")
 
-""" importing Sounds"""
-soundtrack        = pygame.mixer.Sound("sounds/soundtrack.ogg")
-missile_sound     = pygame.mixer.Sound("sounds/missile.ogg")
-ship_thrust_sound = pygame.mixer.Sound("sounds/thrust.ogg")
-explosion_sound   = pygame.mixer.Sound("sounds/explosion.ogg")
+# importing Sounds
+soundtrack         = pygame.mixer.Sound("sounds/soundtrack.ogg")
+missile_sound      = pygame.mixer.Sound("sounds/missile.ogg")
+ship_thrust_sound  = pygame.mixer.Sound("sounds/thrust.ogg")
+explosion_sound    = pygame.mixer.Sound("sounds/explosion.ogg")
+button_sound       = pygame.mixer.Sound("sounds/button-3.ogg")
+hover_button_sound = pygame.mixer.Sound("sounds/button_hover.ogg")
 
-""" Setting up the sound volume level"""
-explosion_sound.set_volume(VOLUME_LEVEL[1])
-missile_sound.set_volume(VOLUME_LEVEL[1])
-soundtrack.set_volume(VOLUME_LEVEL[1])
+# Setting up the sound volume level"""
+# explosion_sound.set_volume(VOLUME_LEVEL[sound_index])
+# missile_sound.set_volume(VOLUME_LEVEL[sound_index])
+# soundtrack.set_volume(VOLUME_LEVEL[sound_index])
 
 
-""" Setting up fonts"""
+# Setting up fonts
 smallfont  = pygame.font.SysFont("comicsansms", 25)
 mediumfont = pygame.font.SysFont("comicsansms", 50)
 bigfont    = pygame.font.SysFont("comicsansms", 80)
 
 
+
+
 # helper functions to handle transformations
 def angle_to_vector(ang):
     """
-    :param ang its an angle in degrees in the regular right-oriented Descartes
-    But in pyGame coordinates are left oriented plus cos and sin take arguments
-    in radians that is why this convertation is needed
+    Ð²Ñ–Ñ�ÑŒ y Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð° Ð²Ð½Ð¸Ð·, Ð° Ð²Ñ–Ñ�ÑŒ Ñ…  Ð²Ð¿Ñ€Ð°Ð²Ð¾
+    ÐºÑƒÑ‚ Ð½Ð° Ð²Ñ…Ñ–Ð´ Ð¿Ð¾Ð´Ð°Ñ”Ñ‚ÑŒÑ�Ñ� Ð² Ð³Ñ€Ð°Ð´ÑƒÑ�Ð°Ñ… Ñ�Ðº Ð´Ð»Ñ� Ð½Ð¾Ñ€Ð¼Ð°Ð»ÑŒÐ½Ð¾Ñ— Ð´ÐµÐºÐ°Ñ€Ñ‚Ð¾Ð²Ð¾Ñ— Ñ�Ð¸Ñ�Ñ‚ÐµÐ¼Ð¸:
+    Ñ‚Ð¾Ð±Ñ‚Ð¾ Ð²Ñ–Ñ�ÑŒ Ñƒ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð° Ð²Ð³Ð¾Ñ€Ñƒ, Ð° Ð²Ñ–Ñ�ÑŒ Ñ… - Ð²Ð¿Ñ€Ð°Ð²Ð¾
+    ÐºÐ¾Ñ�Ð¸Ð½ÑƒÑ� Ñ– Ñ�Ð¸Ð½ÑƒÑ� Ð¿Ñ€Ð¸Ð¹Ð¼Ð°ÑŽÑ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð½Ñ� Ð² Ñ€Ð°Ð´Ñ–Ð°Ð½Ð°Ñ…, Ñ‚Ð¾Ð¼Ñƒ Ð¹Ð´Ðµ ÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð°Ñ†Ñ–Ñ�
     """
     return [math.cos(math.radians(ang)), -math.sin(math.radians(ang))]
+
+def set_sound_level(level):
+    explosion_sound.set_volume(VOLUME_LEVEL[level])
+    missile_sound.set_volume(VOLUME_LEVEL[level])
+    soundtrack.set_volume(VOLUME_LEVEL[level])
+    button_sound.set_volume(VOLUME_LEVEL[level])
+
+
+
+def change_sound_level():
+    global current_sound
+    if current_sound < 9:
+        current_sound += 1
+    if current_sound == 9:
+        current_sound = 0
+    set_sound_level(current_sound)
 
 
 def dist(p,q):
@@ -90,7 +114,6 @@ def dist(p,q):
 
 def rot_center(image, angle):
     """rotate an image while keeping its center and size"""
-
     orig_rect = image.get_rect()
     rot_image = pygame.transform.rotate(image, angle)
     rot_rect = orig_rect.copy()
@@ -102,44 +125,32 @@ def rot_center(image, angle):
 def rock_spawner():
     global asteroid
     if not game_over:
-        rock_pos = [random.randrange(0, WIDTH - 90),
-                    random.randrange(0, HEIGHT - 90)]
-        rock_vel = [random.randrange(-4, 4),
-                    random.randrange(-4, 4)]
+        rock_pos = [random.randrange(0,WIDTH-90),random.randrange(0,HEIGHT-90)]
+        rock_vel = [random.randrange(-4,4),random.randrange(-4,4)]
         rock_angle = 1
         rock_angle_vel = random.randrange(-10, 10)
         if score > 1000:
             rock_vel[0] += score // 1000
             rock_vel[1] += score // 1000
-        asteroid = Sprites(rock_pos,
-                           rock_vel,
-                           rock_angle,
-                           rock_angle_vel,
-                           asteroid_image,
-                           90)
-                    
-        if len(ASTEROIDS_GROUP) < 20 and\
-                        abs(asteroid.pos[0] - ship.pos[0]) > 150 and\
-                        abs(asteroid.pos[1] - ship.pos[1]) > 150:
+        asteroid = Sprites(rock_pos, rock_vel, rock_angle, rock_angle_vel, asteroid_image, 90)
+
+        if len(ASTEROIDS_GROUP) < 20 and abs(asteroid.pos[0] - ship.pos[0])> 150 and abs(asteroid.pos[1] - ship.pos[1])>150:
             ASTEROIDS_GROUP.add(asteroid)
         else:
             pass
 
 
 def group_collide(group, other_object):
-
     s = set(group)
     collide = False
     for item in s:
         if item.collide(other_object):
-            expl = Sprites(other_object.pos,
-                           [0, 0], 0, 0, explosion_image, 128, True)
+            expl = Sprites(other_object.pos ,[0,0], 0, 0, explosion_image, 128, True)
             EXPLOSIONS_GROUP.add(expl)
             explosion_sound.play()
-            group.remove(item)         
+            group.remove(item)
             collide = True
     return collide
-
 
 def group_to_group_collide(group1, group2):
     global count_collision
@@ -155,13 +166,12 @@ def group_to_group_collide(group1, group2):
 
 def game_lives(lives):
     text = smallfont.render("Lives: " + str(lives), True, white)
-    game_display.blit(text, [WIDTH - 125 ,0])
-
+    game_display.blit(text, [WIDTH-125 ,0])
 
 def game_score(score):
     text = smallfont.render("Score: " + str(score), True, white)
     game_display.blit(text, [25,0])
-  
+
 
 def text_objects(text, color, size):
     if size == "small":
@@ -173,39 +183,16 @@ def text_objects(text, color, size):
     return textSurface, textSurface.get_rect()
 
 
-def message_to_screen(msg, color, y_displace=0, size = 'small'):
+def message_to_screen(msg, color, y_displace=0, x_displace=0, size = 'small'):
 
     textSurf, textRect = text_objects(msg, color, size)
-    textRect.center = (WIDTH/2), (HEIGHT/2) + y_displace
+    textRect.center = (WIDTH/2)+ x_displace, (HEIGHT/2) + y_displace
     game_display.blit(textSurf, textRect)
 
 def text_to_button(msg, color, buttonx, buttony, buttonwidth, buttonheight, size = "small" ):
     text_surf, text_rect = text_objects(msg, color, size)
     text_rect.center = ((buttonx+buttonwidth/2)), (buttony+(buttonheight/2))
     game_display.blit(text_surf, text_rect)
-    
-def button(text, x, y, width, height, in_active_img, active_img, text_color, action=None):
-    global game_over, paused
-    cur   = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
-    if x+width >= cur[0] >= x and y+height>= cur[1] > y:
-        game_display.blit(pbutton_image, (x, y))
-        if click[0] == 1 and action != None:
-            if action == "quit":
-                pygame.quit()
-                quit()
-            if action == "settings":
-                game_settings()
-            if action == "play":
-                game_loop()
-            if action == "resume":
-                paused = False
-            if action == "menu":
-                game_intro()
-
-    else:
-        game_display.blit(button_image, (x, y))
-    text_to_button(text, text_color, x, y, width, height)
 
 
 class Ships:
@@ -227,16 +214,16 @@ class Ships:
         if self.thrust == True:
             image = rot_center(self.image2, self.angle)
             game_display.blit(image, self.pos)
-    
+
     def shoot(self):
-        global missile        
+        global missile
         missile_pos = [(self.get_pos_center()[0]),
                        self.get_pos_center()[1]]
         missile_vel = [self.vel[0] + (angle_to_vector(self.angle)[0] * 10),
                        self.vel[1] + (angle_to_vector(self.angle)[1] * 10)]
         missile =  Sprites(missile_pos, missile_vel, 0, 0, missile_image, 10, False)
-        MISSILE_GROUP.add(missile)     
-    
+        MISSILE_GROUP.add(missile)
+
     def update(self):
         self.angle  += self.angle_vel
         self.pos[0] += self.vel[0]
@@ -261,17 +248,17 @@ class Ships:
             self.pos[1] = -80
         if self.pos[1]<-80:
             self.pos[1]=HEIGHT
-    
+
     def get_pos_center(self):
         return [self.pos[0]+ self.image_length/2, self.pos[1]+self.image_length/2]
-    
+
     def get_radius(self):
         return self.image_length/2
-    
+
     def thrusters_on(self):
         self.thrust = True
         ship_thrust_sound.play()
-        
+
     def thrusters_off(self):
         self.thrust = False
         ship_thrust_sound.stop()
@@ -284,7 +271,7 @@ class Ships:
 
 
 class Sprites:
-    
+
     def __init__(self, pos, vel, ang, ang_vel, image, image_length=None, animated=False):
         self.pos = [pos[0],pos[1]]
         self.vel = [vel[0],vel[1]]
@@ -305,7 +292,7 @@ class Sprites:
 
     def get_radius(self):
         return self.image_length/2
-    
+
     def draw(self, game_display):
         global time
         if self.animated == False:
@@ -316,7 +303,7 @@ class Sprites:
             current_expl_center = [self.image_center[0] + current_index * self.image_size[0], self.image_center[1]]
             canvas.draw_image(self.image, current_expl_center, self.image_size, self.pos ,self.image_size)"""
             game_display.blit(self.image, self.pos, (self.ex_speed*self.ss_lenght,0,128,128))
-        
+
     def update(self):
         self.angle += self.angle_vel
         self.pos[0] += self.vel[0]
@@ -337,15 +324,87 @@ class Sprites:
             MISSILE_GROUP.discard(self)
             EXPLOSIONS_GROUP.discard(self)
 
-        
+
     def collide(self, other_object):
         if dist(self.get_pos_center(), other_object.get_pos_center()) <= (self.get_radius() + other_object.get_radius()):
             return True
         else:
             return False
 
+class Buttons:
+
+    def __init__(self, surface, x, y, width, height, in_active_img, active_img, text, color, size, action=None):
+        self.surface = surface
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.in_active_img = in_active_img
+        self.active_img = active_img
+        self.text = text
+        self.color = color
+        self.size = size
+        self.action = action
+
+    def text_to_button(self):
+
+        text_surf, text_rect = text_objects(self.text, self.color, self.size)
+        text_rect.center = ((self.x + self.width/2)), (self.y +(self.height/2))
+        self.surface.blit(text_surf, text_rect)
+
+    def draw(self):
+        global game_over, paused, intro
+        cur   = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if self.x + self.width >= cur[0] >= self.x and self.y + self.height >= cur[1] > self.y:
+            self.surface.blit(self.active_img, (self.x, self.y))
+            if click[0] == 1 and self.action != None:
+                button_sound.play()
+                if self.action == "quit":
+                    pygame.quit()
+                    quit()
+                if self.action == "settings":
+                    game_settings()
+                if self.action == "play":
+                    game_loop()
+                if self.action == "resume":
+                    un_pause()
+                if self.action == "menu":
+                    intro = True
+                    game_intro()
+                if self.action == "change_sound_level":
+                    change_sound_level()
+                if self.action == "un_settings":
+                    un_settings()
+        else:
+            self.surface.blit(self.in_active_img, (self.x, self.y))
+        self.text_to_button()
+
 def game_intro():
-    intro = True
+    global paused
+
+    resume_game = Buttons(game_display, 100, 200, 200, 48, button_image, pbutton_image, "Resume", white, "small", action="resume" )
+    while paused:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+
+        game_display.blit(intro_image, (0, 0))
+        #button("Play", 100, 200, 200, 48, button_image, pbutton_image, white, "play")
+
+        resume_game.draw()
+        # button("Settings", 100, 250, 200, 48, button_image, pbutton_image, white, "settings")
+
+        settings_button.draw()
+        # button("Quit", 100, 300, 200, 48, button_image, pbutton_image, white, "quit")
+
+        quit_button.draw()
+        pygame.display.update()
+        clock.tick(FPS)
+
     while intro:
 
         for event in pygame.event.get():
@@ -353,24 +412,26 @@ def game_intro():
                 pygame.quit()
                 quit()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    intro = False
-                if event.key == pygame.K_q:
-                    pygame.quit()
-                    quit()
 
         game_display.blit(intro_image, (0, 0))
-        button("Play", 100, 200, 200, 48, button_image, pbutton_image, white, "play")
-        button("Settings", 100, 250, 200, 48, button_image, pbutton_image, white, "settings")
-        button("Quit", 100, 300, 200, 48, button_image, pbutton_image, white, "quit")
+        #button("Play", 100, 200, 200, 48, button_image, pbutton_image, white, "play")
+
+        play_button.draw()
+        # button("Settings", 100, 250, 200, 48, button_image, pbutton_image, white, "settings")
+
+        settings_button.draw()
+        # button("Quit", 100, 300, 200, 48, button_image, pbutton_image, white, "quit")
+
+        quit_button.draw()
         pygame.display.update()
         clock.tick(FPS)
 
 
 def game_settings():
+    global  game_set
     game_set = True
-    
+    back_button = Buttons(game_display, 550,500,200,48,button_image,pbutton_image,"Back",white,"small","un_settings")
+    change_sound = Buttons(game_display, 200,355,200,48,button_image,pbutton_image,"Change",white,"small","change_sound_level")
     while game_set:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -385,68 +446,72 @@ def game_settings():
                     quit()
 
         game_display.blit(settings_image, (0,0))
-        button("Menu", 300, 500, 200, 48, button_image, pbutton_image, white, "menu")
-        pygame.display.update()
-        clock.tick(FPS)
 
-def pause():
+        # Text to screen
+        message_to_screen("Controls:", white, -250, -290, "medium")
+        message_to_screen("Accelerate:                         Up Arrow", white, -200, -140)
+        message_to_screen("Rotate clockwise:               Right Arrow", white, -160,-125)
+        message_to_screen("Rotate counter-clockwise: Left Arrow", white, -120,-130)
+        message_to_screen("Shoot: SPACEBAR", white, -80, -250)
+        message_to_screen("Pause: P", white, -40, -310)
+        message_to_screen("Exit to Menu: ESC", white, 0, -250)
+        message_to_screen("Sound:", white, 75, -310, "medium")
+        # Buttons
+        change_sound.draw()
+        back_button.draw()
+
+        pygame.display.update()
+        clock.tick(FPS/6)
+
+
+def un_pause():
     global paused
-    
-    paused = True
-    message_to_screen("Paused", white, -100, size="big")
-    message_to_screen("Hit ENTER to resume or Q to quit", white, 25)
-    #button("Resume", 100, 200, 200, 48, button_image, pbutton_image, white, "resume")
-    #button("Quit", 100, 300, 200, 48, button_image, pbutton_image, white, "quit")
-    pygame.display.update()
-    print "hello"
-    
-    while paused:
-        ship.thrusters_off()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    paused = False
-                elif event.key == pygame.K_q:
-                    pygame.quit()
-                    quit()
-        clock.tick(FPS)
+    paused = False
+
+def un_settings():
+    global game_set
+    game_set = False
+    print "hi"
 
 
 def gameover():
     global game_over, ASTEROIDS_GROUP, MISSILE_GROUP, EXPLOSIONS_GROUP
 
     game_over = True
+    # updating game variables:
     ASTEROIDS_GROUP = set([])
     MISSILE_GROUP = set([])
     EXPLOSIONS_GROUP = set([])
+
+    # drawing to screen:
     game_display.blit(gameover_image, (0, 0))
     game_lives(lives)
     game_score(score)
     message_to_screen("Game Over", white, -100, size="big")
-    button("Play again", 175, 400, 200, 48, pbutton_image, button_image, white, "play")
-    button("Exit to Menu", 425, 400, 200, 48, pbutton_image, button_image, white, "menu")
+    play_again_button = Buttons(game_display,175,400,200,48,button_image,pbutton_image,"Play again",white,"small","play").draw()
+    exit_to_menu = Buttons(game_display,425,400,200,48,button_image,pbutton_image,"Exit to Menu", white,"small","menu").draw()
+
+
     pygame.display.update()
     clock.tick(FPS)
 
- 
+
+
 def game_loop():
-    global time, lives, score, game_over, ship, ASTEROIDS_GROUP, MISSILE_GROUP, EXPLOSIONS_GROUP, pause
+    global time, lives, score, game_over, ship, ASTEROIDS_GROUP, MISSILE_GROUP, EXPLOSIONS_GROUP, paused, intro
     game_over = False
     game_exit = False
+    intro = False
     score = 0
     lives = 3
     ASTEROIDS_GROUP = set([])
     MISSILE_GROUP = set([])
     EXPLOSIONS_GROUP = set([])
-                
+
     ship = Ships([WIDTH/2, HEIGHT/2], [0, 0], 0, 0, ship_image1, ship_image2)
-    #asteroid = Sprite([0,0], [1,1], 0, 5, asteroid_image, 90)
     pygame.time.set_timer(MY_EVENT, 500)
     soundtrack.play(-1)
-   
+
     while not game_exit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -461,15 +526,14 @@ def game_loop():
                 if event.key == pygame.K_RIGHT:
                     ship.decrease_angle_vel()
                 if event.key == pygame.K_UP:
-                    ship.thrusters_on()  
+                    ship.thrusters_on()
                 if event.key == pygame.K_SPACE:
                     ship.shoot()
                     missile_sound.play()
-                if event.key == pygame.K_p:
-                    pause()
                 if event.key == pygame.K_ESCAPE:
                     ship.thrusters_off()
                     soundtrack.stop()
+                    paused = True
                     game_intro()
 
             if event.type == pygame.KEYUP:
@@ -481,8 +545,8 @@ def game_loop():
                     ship.thrusters_off()
 
         game_display.blit(nebula_image, (0, 0))
-        
-        """-Animated Background-"""  
+
+        """-Animated Background-"""
         time += 1
         wtime = (time / 4) % WIDTH
         game_display.blit(debris_image, (wtime-WIDTH*1.25, 0))
@@ -490,22 +554,22 @@ def game_loop():
         game_display.blit(debris_image, (wtime + WIDTH/2, 0))
 
         ship.draw(game_display)
-        
+
         for rock in ASTEROIDS_GROUP:
             rock.draw(game_display)
             rock.update()
-            
+
         x = set(MISSILE_GROUP)
         for item in x:
             item.draw(game_display)
             item.update()
-            
+
         e = set(EXPLOSIONS_GROUP)
         for item in e:
             item.draw(game_display)
             # explosion_sound.play()
             item.update()
-            
+
         if group_collide(ASTEROIDS_GROUP, ship):
             lives -= 1
         if group_to_group_collide(ASTEROIDS_GROUP, MISSILE_GROUP):
@@ -517,12 +581,21 @@ def game_loop():
 
         game_score(score)
         game_lives(lives)
-    
+
         ship.update()
         pygame.display.update()
         clock.tick(FPS)
     pygame.quit
     quit()
+
+set_sound_level(DEFAULT_SOUND_LEVEL)
+
+# Button objects:
+play_button     = Buttons(game_display, 100, 200, 200, 48, button_image, pbutton_image, "Play", white, "small", action="play")
+settings_button = Buttons(game_display, 100, 250, 200, 48, button_image, pbutton_image, "Settings", white, "small", action="settings")
+quit_button     = Buttons(game_display, 100, 300, 200, 48, button_image, pbutton_image, "Quit", white, "small", action="quit")
+resume_button   = Buttons(game_display, 150, 300, 200, 48, button_image, pbutton_image, "Resume", white, "small", action="resume" )
+menu_button     = Buttons(game_display, 450, 300, 200, 48, button_image, pbutton_image, "Exit to Menu", white, "small", action="menu" )
 
 game_intro()
 
