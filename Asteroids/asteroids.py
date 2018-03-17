@@ -597,5 +597,7 @@ quit_button     = Buttons(game_display, 100, 300, 200, 48, button_image, pbutton
 resume_button   = Buttons(game_display, 150, 300, 200, 48, button_image, pbutton_image, "Resume", white, "small", action="resume" )
 menu_button     = Buttons(game_display, 450, 300, 200, 48, button_image, pbutton_image, "Exit to Menu", white, "small", action="menu" )
 
-game_intro()
+
+if __name__ == "__main__":
+    game_intro()
 
